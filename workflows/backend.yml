@@ -1,0 +1,137 @@
+name: 🚀 Backend CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # ── Lint & Test ───────────────────────────────────────────
+  test:
+    name: 🧪 Lint & Test
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping:1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Create test environment
+        working-directory: backend
+        run: |
+          cat > .env << 'EOF'
+          NODE_ENV=test
+          PORT=5001
+          MONGODB_URI=mongodb://localhost:27017/sducs-mk-test
+          JWT_SECRET=test-jwt-secret-at-least-32-chars-long
+          JWT_EXPIRES_IN=1d
+          ENCRYPTION_MASTER_KEY=test-encryption-key-32-chars-long!!
+          ACCESS_CODE_PEPPER=test-pepper
+          FIREBASE_PROJECT_ID=test-project
+          FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----\n"
+          FIREBASE_CLIENT_EMAIL=test@test-project.iam.gserviceaccount.com
+          FIREBASE_STORAGE_BUCKET=test-project.appspot.com
+          STORAGE_PROVIDER=firebase
+          RAZORPAY_KEY_ID=rzp_test_dummy
+          RAZORPAY_KEY_SECRET=dummy_secret
+          RAZORPAY_WEBHOOK_SECRET=dummy_webhook_secret
+          STATIC_UPI_ID=test@upi
+          GEMINI_API_KEY=dummy_key
+          APP_URL=http://localhost:5001
+          EOF
+
+      - name: Run tests
+        working-directory: backend
+        run: npm test --if-present
+
+      - name: Security audit
+        working-directory: backend
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  # ── Deploy to Production ──────────────────────────────────
+  deploy-production:
+    name: 🌐 Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: ${{ vars.BACKEND_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Option A: Deploy to Railway ───────────────────────
+      - name: Deploy to Railway
+        if: vars.DEPLOY_TARGET == 'railway'
+        uses: bervProject/railway-deploy@main
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+          service: ${{ vars.RAILWAY_SERVICE }}
+
+      # ── Option B: Deploy to Render ────────────────────────
+      - name: Deploy to Render
+        if: vars.DEPLOY_TARGET == 'render'
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
+      # ── Option C: Deploy to VPS via SSH ──────────────────
+      - name: Deploy to VPS
+        if: vars.DEPLOY_TARGET == 'vps'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /var/www/sducs-mk/backend
+            git pull origin main
+            npm ci --production
+            pm2 restart sducs-mk-backend || pm2 start server.js --name sducs-mk-backend
+            pm2 save
+
+      - name: Health check
+        run: |
+          sleep 15
+          curl -f "${{ vars.BACKEND_URL }}/health" || exit 1
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Backend deployed successfully to ${{ vars.BACKEND_URL }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "❌ Backend deployment failed!"

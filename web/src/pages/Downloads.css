@@ -1,0 +1,117 @@
+/* Downloads Page */
+.downloads-page { padding-bottom: 40px; }
+.dl-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.dl-title  { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff; }
+.dl-count  { font-size:12px; color:rgba(255,255,255,0.35); background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:20px; }
+
+/* Data quota */
+.data-quota-card {
+  padding:20px; border-radius:18px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  margin-bottom:16px;
+}
+.dq-row  { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.dq-label{ font-size:14px; font-weight:600; color:rgba(255,255,255,0.7); }
+.dq-nums { font-size:13px; color:rgba(255,255,255,0.4); }
+.dq-nums span { color:rgba(255,255,255,0.25); }
+.dq-bar  { height:7px; border-radius:4px; background:rgba(255,255,255,0.08); overflow:hidden; }
+.dq-fill { height:100%; border-radius:4px; transition:width 0.6s ease; }
+.dq-warn { margin-top:10px; background:none; border:none; color:#f59e0b; font-size:13px; font-weight:600; cursor:pointer; padding:0; }
+.dq-warn:hover { color:#fbbf24; }
+
+/* Input card */
+.dl-input-card {
+  padding:22px; border-radius:18px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  margin-bottom:20px;
+}
+.dic-title { font-size:15px; font-weight:700; color:#fff; margin-bottom:14px; }
+.url-row   { display:flex; gap:10px; margin-bottom:14px; }
+.url-input {
+  flex:1; padding:12px 14px; border-radius:11px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05);
+  color:#fff; font-size:13px; font-family:'DM Sans',sans-serif;
+  outline:none; transition:border-color 0.2s;
+}
+.url-input:focus { border-color:rgba(92,110,230,0.6); }
+.url-input::placeholder { color:rgba(255,255,255,0.2); }
+.detect-btn {
+  width:46px; height:46px; border-radius:11px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(92,110,230,0.15);
+  color:#fff; font-size:18px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.detect-btn:hover:not(:disabled) { background:rgba(92,110,230,0.3); }
+.detect-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+/* Detected info */
+.detected-info {
+  padding:14px; border-radius:12px;
+  background:rgba(92,110,230,0.08);
+  border:1px solid rgba(92,110,230,0.2);
+  margin-bottom:14px;
+}
+.di-left  { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.di-icon  { font-size:26px; flex-shrink:0; }
+.di-name  { font-size:13px; font-weight:600; color:#fff; margin-bottom:2px; }
+.di-meta  { font-size:11px; color:rgba(255,255,255,0.4); }
+.quality-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.q-label { font-size:12px; color:rgba(255,255,255,0.45); }
+.q-pill  {
+  padding:5px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5);
+  font-size:11px; font-weight:500; transition:all 0.15s;
+}
+.q-pill:hover { border-color:rgba(92,110,230,0.4); color:rgba(255,255,255,0.8); }
+.q-pill.active { background:rgba(92,110,230,0.25); border-color:rgba(92,110,230,0.5); color:#fff; }
+
+.dl-start-btn {
+  width:100%; padding:13px; border-radius:12px; border:none;
+  background:linear-gradient(135deg,#5c6ee6,#7c3aed);
+  color:#fff; font-size:15px; font-weight:600; font-family:'DM Sans',sans-serif;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:all 0.2s; box-shadow:0 8px 24px rgba(92,110,230,0.3);
+}
+.dl-start-btn:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 12px 28px rgba(92,110,230,0.4); }
+.dl-start-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* Jobs */
+.jobs-section { }
+.js-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.js-header h3 { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:#fff; }
+.js-refresh { background:none; border:none; color:#818cf8; font-size:13px; cursor:pointer; }
+.jobs-list  { display:flex; flex-direction:column; gap:8px; }
+
+.job-card {
+  padding:14px 16px; border-radius:14px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  transition:background 0.15s;
+}
+.jc-top  { display:flex; align-items:center; gap:12px; }
+.jc-status-icon { font-size:20px; flex-shrink:0; }
+.jc-info { flex:1; min-width:0; }
+.jc-name { font-size:13px; font-weight:500; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.jc-meta { font-size:11px; color:rgba(255,255,255,0.35); margin-top:2px; }
+.jc-badge { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; flex-shrink:0; }
+.jc-del  { width:28px; height:28px; border-radius:8px; border:none; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.35); font-size:12px; flex-shrink:0; transition:all 0.15s; }
+.jc-del:hover { background:rgba(239,68,68,0.15); color:#f87171; }
+
+.jc-progress { margin-top:10px; display:flex; align-items:center; gap:10px; }
+.jp-bar { flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.08); overflow:hidden; }
+.jp-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#5c6ee6,#818cf8); transition:width 0.5s ease; }
+.jp-pct { font-size:11px; color:rgba(255,255,255,0.4); min-width:32px; text-align:right; }
+.jc-error { margin-top:8px; font-size:11px; color:#f87171; padding:6px 10px; border-radius:8px; background:rgba(239,68,68,0.08); }
+
+.spinner {
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;
+  animation:spin 0.7s linear infinite;
+  display:inline-block;
+}

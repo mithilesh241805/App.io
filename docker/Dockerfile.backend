@@ -1,0 +1,41 @@
+# ============================================================
+#  SDUCS – MK  |  Backend Dockerfile
+# ============================================================
+
+# ── Build stage ───────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install deps first (better layer caching)
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# ── Production stage ──────────────────────────────────────────
+FROM node:20-alpine AS production
+
+# Security: run as non-root
+RUN addgroup -g 1001 -S nodejs && \
+    adduser  -S nodeuser -u 1001
+
+WORKDIR /app
+
+# Copy built node_modules
+COPY --from=builder --chown=nodeuser:nodejs /app/node_modules ./node_modules
+
+# Copy application code
+COPY --chown=nodeuser:nodejs . .
+
+# Remove dev files
+RUN rm -f .env .env.* *.test.js
+
+# Expose port
+EXPOSE 5000
+
+USER nodeuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:5000/health || exit 1
+
+CMD ["node", "server.js"]
